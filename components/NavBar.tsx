@@ -36,8 +36,8 @@ export default function NavBar() {
                     <SignedOut>
                         <Link className="hover:text-emerald-500 transition-colors" href="/">Home</Link>
                         <Link className="hover:text-emerald-500 transition-colors" href={isSignedIn ? "/subscibe" : "/sign-up"}>Subscribe</Link>
+                        <Link className="px-4 py-2 border-white border-1 rounded text-white hover:bg-gray-50 hover:text-black transition-colors" href="/sign-in">Sign In</Link>
                         <Link className="px-4 py-2 bg-emerald-500 rounded text-white hover:bg-emerald-600 transition-colors" href="/sign-up">Sign Up</Link>
-                        
                     </SignedOut>
                 </div>
             </div> 
