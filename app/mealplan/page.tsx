@@ -196,7 +196,7 @@ export default function MealPlanDashboard() {
                 {daysOfTheWeek.map((day, key) => {
                   const mealPlan = getMealPlanForDay(day);
                   return (
-                    <div key={key} className="shadow-md rounded-lg p-4 mr-4 border border-emerald-300">
+                    <div key={key} className="shadow-md rounded-lg p-4 mr-4 border border-emerald-400">
                       <h3 className="text-xl font-semibold mb-2 text-emerald-600">{day}</h3>
                       {mealPlan ? (
                         <div className="space-y-2">
