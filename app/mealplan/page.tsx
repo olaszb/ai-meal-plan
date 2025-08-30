@@ -1,5 +1,7 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
+
 interface MealPlanInput {
   dietType: string;
   calories: number;
@@ -9,7 +11,40 @@ interface MealPlanInput {
   days?: number;
 }
 
+interface DailyMealPlan {
+  Breakfast?: string;
+  Lunch?: string;
+  Dinner?: string;
+  Snacks?: string;
+}
+
+interface WeeklyMealPlan {
+  [day: string]: DailyMealPlan;
+}
+
+interface MealPlanResponse {
+  mealPlan?: WeeklyMealPlan;
+  error?: string;
+}
+
+async function generateMealPlan(payload: MealPlanInput) {
+    const response = await fetch("/api/generate-mealplan", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+    })
+
+    return response.json()
+}
+
 export default function MealPlanDashboard() {
+
+    const {mutate, isPending, data} = useMutation<MealPlanResponse, Error, MealPlanInput>({
+        mutationFn: generateMealPlan
+    })
+
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -24,7 +59,11 @@ export default function MealPlanDashboard() {
       days: 7,
     };
 
-    console.log(payload);
+    mutate(payload)
+  }
+
+  if (data){
+    console.log(data)
   }
 
   return (
@@ -123,9 +162,10 @@ export default function MealPlanDashboard() {
             <div>
               <button
                 type="submit"
+                disabled={isPending}
                 className="w-full bg-emerald-500 text-white py-2 px-4 rounded-md hover:bg-emerald-600 transition-colors border-white border-1"
               >
-                Generate Meal Plan
+                {isPending ? "Generating..." : "Generate Meal Plan"}
               </button>
             </div>
           </form>
