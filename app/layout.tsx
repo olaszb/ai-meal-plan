@@ -33,7 +33,7 @@ export default function RootLayout({
         >
           <ReactQueryClientProvider>
             <NavBar />
-            <div className="max-w-7xl mx-auto p-4 min-h-screen">
+            <div className="max-w-7xl mx-auto p-4 mt-10 min-h-screen">
               {children}
             </div>
           </ReactQueryClientProvider>
