@@ -1,5 +1,6 @@
 "use client";
 
+import { Spinner } from "@/components/spinner";
 import { useMutation } from "@tanstack/react-query";
 
 interface MealPlanInput {
@@ -28,22 +29,25 @@ interface MealPlanResponse {
 }
 
 async function generateMealPlan(payload: MealPlanInput) {
-    const response = await fetch("/api/generate-mealplan", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-    })
+  const response = await fetch("/api/generate-mealplan", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
 
-    return response.json()
+  return response.json();
 }
 
 export default function MealPlanDashboard() {
-
-    const {mutate, isPending, data} = useMutation<MealPlanResponse, Error, MealPlanInput>({
-        mutationFn: generateMealPlan
-    })
+  const { mutate, isPending, data, isSuccess } = useMutation<
+    MealPlanResponse,
+    Error,
+    MealPlanInput
+  >({
+    mutationFn: generateMealPlan,
+  });
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -59,16 +63,27 @@ export default function MealPlanDashboard() {
       days: 7,
     };
 
-    mutate(payload)
+    mutate(payload);
   }
 
-  if (data){
-    console.log(data)
-  }
+  const daysOfTheWeek = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+
+  const getMealPlanForDay = (day: string): DailyMealPlan | undefined => {
+    if (!data?.mealPlan) return undefined;
+    return data?.mealPlan[day];
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl flex flex-col md:flex-row bg-zinc-900 shadow-lg rounded-lg overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center p-4 mt-5">
+      <div className="w-full max-w-7xl flex flex-col md:flex-row bg-zinc-900 shadow-lg rounded-lg overflow-hidden">
         <div className="w-full md:w-1/3 lg:w-1/4 p-6 bg-emerald-500 text-white">
           <h1 className="text-2xl font-bold mb-6 text-center">
             AI Meal Plan Generator
@@ -174,6 +189,48 @@ export default function MealPlanDashboard() {
           <h2 className="text-2xl font-bold mb-6 text-emerald-700">
             Weekly Meal Plan
           </h2>
+
+          {data?.mealPlan && isSuccess ? (
+            <div className="h-[600px] overflow-y-auto text-white">
+              <div className="space-y-6">
+                {daysOfTheWeek.map((day, key) => {
+                  const mealPlan = getMealPlanForDay(day);
+                  return (
+                    <div key={key} className="shadow-md rounded-lg p-4 mr-4 border border-emerald-300">
+                      <h3 className="text-xl font-semibold mb-2 text-emerald-600">{day}</h3>
+                      {mealPlan ? (
+                        <div className="space-y-2">
+                          <div >
+                            <strong>Breakfast:</strong> {mealPlan.Breakfast}
+                          </div>
+                          <div>
+                            <strong>Lunch:</strong> {mealPlan.Lunch}
+                          </div>
+                          <div>
+                            <strong>Dinner:</strong> {mealPlan.Dinner}
+                          </div>
+                          {mealPlan.Snacks && (
+                            <div>
+                              <strong>Snack:</strong> {mealPlan.Snacks}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <p>No meal plan available.</p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : isPending ? (
+            <Spinner />
+          ) : (
+            <p className="text-white">
+              {" "}
+              Please generate a meal plan to see it here.
+            </p>
+          )}
         </div>
       </div>
     </div>
