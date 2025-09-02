@@ -1,7 +1,11 @@
+"use client"
+
+import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
+    const {isSignedIn } = useUser();
   return (
     <div className="px-4 py-8 mt-8 sm:py-12 lg:py-16 max-w-7xl mx-auto text-gray-50">
         <section className="bg-gradient-to-r from-emerald-400 to-emerald-600 text-white rounded-lg mb-12 p-8 text-center">
@@ -9,7 +13,7 @@ export default function Home() {
             <p>
                 Let our AI do the planning. You focus on cooking and enjoying!
             </p>
-            <Link href="/sign-up" className="mt-4 inline-block bg-white text-emerald-500 font-medium px-5 py-3 rounded hover:bg-gray100 transition-colors">
+            <Link href={isSignedIn ? "/subscribe" : "/sign-up"} className="mt-4 inline-block bg-white text-emerald-500 font-medium px-5 py-3 rounded hover:bg-gray100 transition-colors">
                 Get Started
             </Link>
         </section>

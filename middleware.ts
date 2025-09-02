@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
@@ -13,7 +14,10 @@ const isPublicRoute = createRouteMatcher([
 
 const isSignUpRoute = createRouteMatcher(["/sign-up(.*)", "/sign-in(.*)"]);
 
+
 const isMealPlanRoute = createRouteMatcher(["/mealplan(.*)"]);
+
+const isSubscribeRoute = createRouteMatcher(["/subscribe(.*)"]);
 
 export default clerkMiddleware(async (auth, req) => {
   const userAuth = await auth();
@@ -43,6 +47,20 @@ export default clerkMiddleware(async (auth, req) => {
       }
     } catch (error: any) {
       return NextResponse.redirect(new URL("/subscribe", origin));
+    }
+  }
+
+  if (isSubscribeRoute(req) && userId) {
+    try {
+      const response = await fetch(
+        `${origin}/api/check-subscription?userId=${userId}`
+      );
+      const data = await response.json();
+      if (data.subscriptionActive) {
+        return NextResponse.redirect(new URL("/mealplan", origin));
+      }
+    } catch (error: any) {
+      return NextResponse.redirect(new URL("/", origin));
     }
   }
 
