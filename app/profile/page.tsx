@@ -1,12 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { Spinner } from "@/components/spinner";
 import { useUser } from "@clerk/nextjs";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import Image from "next/image";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { availablePlans } from "@/lib/plans";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 async function fetchSubscriptionStatus() {
   const response = await fetch("api/profile/subscription-status");
@@ -22,14 +24,26 @@ async function updatePlan(newPlan: string) {
   return response.json();
 }
 
+async function unsubscribe() {
+  const response = await fetch("/api/profile/unsubscribe", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+  });
+  return response.json();
+}
+
 export default function Profile() {
-    const [selectedPlan, setSelectedPlan] = useState<string>("");
+  const [selectedPlan, setSelectedPlan] = useState<string>("");
   const { isLoaded, isSignedIn, user } = useUser();
+  const queryClient = useQueryClient();
+  const router = useRouter();
+
   const {
     data: subscription,
     isLoading,
     isError,
     error,
+    refetch,
   } = useQuery({
     queryKey: ["subscription"],
     queryFn: fetchSubscriptionStatus,
@@ -38,11 +52,36 @@ export default function Profile() {
   });
 
   const {
+    data: cancelledPlan,
+    mutate: unsubscribeMutation,
+    isPending: isUnsubscribePending,
+  } = useMutation({
+    mutationFn: unsubscribe,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["subscription"] });
+      router.push("/subscribe");
+    },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ["subscription"] });
+      toast.error("Error unsubscribing.");
+    },
+  });
+
+  const {
     data: updatedPlan,
     mutate: updatePlanMutation,
     isPending: isUpdatePlanPending,
   } = useMutation({
     mutationFn: updatePlan,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["subscription"] });
+      toast.success("Subscription plan updated successfully");
+      refetch();
+    },
+    onError: () => {
+      queryClient.invalidateQueries({ queryKey: ["subscription"] });
+      toast.error("Error updating plan.");
+    },
   });
 
   const currentPlan = availablePlans.find(
@@ -51,10 +90,20 @@ export default function Profile() {
 
   function handleUpdatePlan() {
     if (selectedPlan) {
-        updatePlanMutation(selectedPlan)
+      updatePlanMutation(selectedPlan);
     }
 
     setSelectedPlan("");
+  }
+
+  function handleUnsubscribe() {
+    if (
+      confirm(
+        "Are you sure you want to unsubscribe? You will lose access to premium features."
+      )
+    ) {
+      unsubscribeMutation();
+    }
   }
 
   if (!isLoaded) {
@@ -95,8 +144,7 @@ export default function Profile() {
           </div>
           <div className="w-full md:w-2/3 p-6 bg-zinc-800">
             <h2 className="text-2xl font-bold mb-6 text-emerald-700">
-              {" "}
-              Subscription Details{" "}
+              Subscription Details
             </h2>
             {isLoading ? (
               <div className="flex items-center">
@@ -107,7 +155,7 @@ export default function Profile() {
               <p className="text-red-500">{error?.message}</p>
             ) : subscription ? (
               <div className="space-y-6">
-                <div className="shadow-md rounded-lg p-4 border border-emerald-400">
+                <div className="shadow-md rounded-lg p-4 bg-zinc-900 border border-emerald-400">
                   <h3 className="text-xl font-semibold mb-2 text-emerald-600">
                     Current Plan
                   </h3>
@@ -130,39 +178,64 @@ export default function Profile() {
                     <p className="text-red-500">Current plan not found.</p>
                   )}
                 </div>
+                <div className="bg-zinc-900 shadow-md rounded-lg p-4 border border-emerald-400">
+                  <h3 className="text-xl font-semibold mb-2 text-emerald-600">
+                    Change Subscription Plan
+                  </h3>
+                  {currentPlan && (
+                    <>
+                      <select
+                        defaultValue={currentPlan?.interval}
+                        disabled={isUpdatePlanPending}
+                        onChange={(
+                          event: React.ChangeEvent<HTMLSelectElement>
+                        ) => setSelectedPlan(event.target.value)}
+                        className="w-full px-3 py-2 border border-emerald-400 rounded-md text-white bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                      >
+                        <option value="" disabled>
+                          Select a New Plan
+                        </option>
+
+                        {availablePlans.map((plan, key) => (
+                          <option key={key} value={plan.interval}>
+                            {plan.name} - ${plan.amount} / {plan.interval}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        onClick={handleUpdatePlan}
+                        className="mt-3 p-2 bg-emerald-500 rounded-lg text-white"
+                      >
+                        Save Change
+                      </button>
+                      {isUpdatePlanPending && (
+                        <div className="flex items-center mt-2">
+                          <Spinner />{" "}
+                          <span className="ml-2"> Updating plan... </span>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+                <div className="bg-zinc-900 shadow-md rounded-lg p-4 border border-emerald-400">
+                  <h3 className="text-xl font-semibold mb-2 text-emerald-600">
+                    Unsubscribe
+                  </h3>
+                  <button
+                    disabled={isUnsubscribePending}
+                    onClick={handleUnsubscribe}
+                    className={`w-full bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition-colors ${
+                      isUnsubscribePending
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
+                    }`}
+                  >
+                    {isUnsubscribePending ? "Unsubscribing..." : "Unsubscribe"}{" "}
+                  </button>
+                </div>
               </div>
             ) : (
               <p> Your are not subscribed to any plan.</p>
-            )}
-          </div>
-
-          <div className="bg-zinc-900 shadow-md rounded-lg p-4 border border-emerald-400">
-            <h3 className="text-xl font-semibold mb-2 text-emerald-600"> Change Subscription Plan</h3>
-            {currentPlan && (
-              <>
-                <select
-                  defaultValue={currentPlan?.interval}
-                  disabled={isUpdatePlanPending}
-                  onChange={(event: React.ChangeEvent<HTMLSelectElement>) => setSelectedPlan(event.target.value)}
-                  className="w-full px-3 py-2 border border-emerald-400 rounded-md text-white bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-emerald-400"
-                >
-                  <option value="" disabled>
-                    Select a New Plan
-                  </option>
-
-                  {availablePlans.map((plan, key) => (
-                    <option key={key} value={plan.interval}>
-                      {plan.name} - ${plan.amount} / {plan.interval}
-                    </option>
-                  ))}
-                </select>
-                <button onClick={handleUpdatePlan} className="mt-3 p-2 bg-emerald-500 rounded-lg text-white"> Save Change </button>
-                {isUpdatePlanPending && (
-                  <div className="flex items-center mt-2">
-                    <Spinner /> <span className="ml-2"> Updating plan... </span>
-                  </div>
-                )}
-              </>
             )}
           </div>
         </div>

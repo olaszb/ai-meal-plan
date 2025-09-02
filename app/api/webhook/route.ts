@@ -25,11 +25,13 @@ export async function POST(request: NextRequest) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
         await handleCheckoutSessionCompleted(session);
+        console.log("checkout completed")
         break;
       }
       case "invoice.payment_failed": {
         const session = event.data.object as Stripe.Invoice;
         await handleInvoicePaymentFailed(session);
+        console.log("invoice payment failed")
         break;
       }
       case "customer.subscription.deleted": {
@@ -38,7 +40,7 @@ export async function POST(request: NextRequest) {
         break;
       }
       default: {
-        console.log("unhandled event type" + event.type);
+        console.log("unhandled event type " + event.type);
       }
     }
   } catch (error: any) {
@@ -73,6 +75,7 @@ async function handleCheckoutSessionCompleted(
         subscriptionTier: session.metadata?.planType || null,
       },
     });
+
   } catch (error: any) {
     console.log(error.message);
   }
