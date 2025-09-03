@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({ subscription: updatedSubscription });
-  } catch (error: unknown) {
+  } catch (error: any) {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }

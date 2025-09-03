@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
 
 
     return NextResponse.json({ subscription: cancelledSubscription });
-  } catch (error: unknown) {
+  } catch (error: any) {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }

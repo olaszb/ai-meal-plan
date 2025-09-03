@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({mealPlan: parsedMealPlan})
-  } catch (error: unknown) {
+  } catch (error: any) {
     return NextResponse.json({ error: "Internal error." }, { status: 500 });
   }
 }
