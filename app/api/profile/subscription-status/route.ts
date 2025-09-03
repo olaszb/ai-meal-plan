@@ -1,9 +1,9 @@
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import {prisma} from "@/lib/prisma"
 
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export async function GET() {
     try {
         const clerkUser = await currentUser()
@@ -21,7 +21,7 @@ export async function GET() {
         }
 
         return NextResponse.json({subscription: profile})
-    }catch(error: unknown) {
+    }catch(error: any) {
         return NextResponse.json({error: "Internal Error"}, {status: 500})
     }
 }

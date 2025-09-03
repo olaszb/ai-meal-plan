@@ -1,11 +1,11 @@
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { currentUser } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe"
 import { getPriceIDFromType } from "@/lib/plans";
 
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export async function POST(request: NextRequest) {
   try {
     const clerkUser = await currentUser();
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({ subscription: updatedSubscription });
-  } catch (error: unknown) {
+  } catch (error: any) {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }

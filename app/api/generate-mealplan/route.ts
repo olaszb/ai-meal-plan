@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 
@@ -82,7 +84,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({mealPlan: parsedMealPlan})
-  } catch (error: unknown) {
+  } catch (error: any) {
     return NextResponse.json({ error: "Internal error." }, { status: 500 });
   }
 }

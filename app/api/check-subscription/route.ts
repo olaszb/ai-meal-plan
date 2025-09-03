@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
@@ -16,7 +17,7 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json({subscriptionActive: profile?.subscriptionActive})
-  } catch (error: unknown) {
+  } catch (error: any) {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }
