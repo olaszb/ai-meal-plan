@@ -1,6 +1,5 @@
 "use client"
 
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useUser } from "@clerk/nextjs";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable  @typescript-eslint/no-explicit-any */
 import { currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
@@ -43,7 +41,7 @@ export async function POST() {
           { message: "Profile created successfully." },
           { status: 201 }
         );
-    } catch( error: any ) {
+    } catch( error: unknown ) {
         return NextResponse.json({error: "internal error."}, {status: 500})
     }
 }
