@@ -14,7 +14,6 @@ const isPublicRoute = createRouteMatcher([
 
 const isSignUpRoute = createRouteMatcher(["/sign-up(.*)", "/sign-in(.*)"]);
 
-
 const isMealPlanRoute = createRouteMatcher(["/mealplan(.*)"]);
 
 const isSubscribeRoute = createRouteMatcher(["/subscribe(.*)"]);
@@ -46,6 +45,7 @@ export default clerkMiddleware(async (auth, req) => {
         return NextResponse.redirect(new URL("/subscribe", origin));
       }
     } catch (error: any) {
+      console.log(error.message);
       return NextResponse.redirect(new URL("/subscribe", origin));
     }
   }
@@ -60,6 +60,7 @@ export default clerkMiddleware(async (auth, req) => {
         return NextResponse.redirect(new URL("/mealplan", origin));
       }
     } catch (error: any) {
+      console.log(error.message);
       return NextResponse.redirect(new URL("/", origin));
     }
   }
