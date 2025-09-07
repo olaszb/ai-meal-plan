@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Spinner } from "@/components/spinner";
@@ -155,35 +154,32 @@ export default function Profile() {
               <p className="text-red-500">{error?.message}</p>
             ) : subscription ? (
               <div className="space-y-6">
-                <div className="shadow-md rounded-lg p-4 bg-zinc-900 border border-emerald-400">
-                  <h3 className="text-xl font-semibold mb-2 text-emerald-600">
-                    Current Plan
-                  </h3>
-                  {currentPlan ? (
-                    <div className="text-white">
-                      <>
-                        <p>
-                          <strong>Plan: </strong> {currentPlan.name}
-                        </p>
-                        <p>
-                          <strong>Amount: </strong> ${currentPlan.amount}{" "}
-                          {currentPlan.currency}
-                        </p>
-                        <p>
-                          <strong>Status: </strong> ACTIVE
-                        </p>
-                      </>
+                {currentPlan ? (
+                  <>
+                    <div className="shadow-md rounded-lg p-4 bg-zinc-900 border border-emerald-400">
+                      <h3 className="text-xl font-semibold mb-2 text-emerald-600">
+                        Current Plan
+                      </h3>
+                      <div className="text-white">
+                        <>
+                          <p>
+                            <strong>Plan: </strong> {currentPlan.name}
+                          </p>
+                          <p>
+                            <strong>Amount: </strong> ${currentPlan.amount}{" "}
+                            {currentPlan.currency}
+                          </p>
+                          <p>
+                            <strong>Status: </strong> ACTIVE
+                          </p>
+                        </>
+                      </div>
                     </div>
-                  ) : (
-                    <p className="text-red-500">Current plan not found.</p>
-                  )}
-                </div>
-                <div className="bg-zinc-900 shadow-md rounded-lg p-4 border border-emerald-400">
-                  <h3 className="text-xl font-semibold mb-2 text-emerald-600">
-                    Change Subscription Plan
-                  </h3>
-                  {currentPlan && (
-                    <>
+                    <div className="bg-zinc-900 shadow-md rounded-lg p-4 border border-emerald-400">
+                      <h3 className="text-xl font-semibold mb-2 text-emerald-600">
+                        Change Subscription Plan
+                      </h3>
+
                       <select
                         defaultValue={currentPlan?.interval}
                         disabled={isUpdatePlanPending}
@@ -214,28 +210,39 @@ export default function Profile() {
                           <span className="ml-2"> Updating plan... </span>
                         </div>
                       )}
-                    </>
-                  )}
-                </div>
-                <div className="bg-zinc-900 shadow-md rounded-lg p-4 border border-emerald-400">
-                  <h3 className="text-xl font-semibold mb-2 text-emerald-600">
-                    Unsubscribe
-                  </h3>
-                  <button
-                    disabled={isUnsubscribePending}
-                    onClick={handleUnsubscribe}
-                    className={`w-full bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition-colors ${
-                      isUnsubscribePending
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                    }`}
-                  >
-                    {isUnsubscribePending ? "Unsubscribing..." : "Unsubscribe"}{" "}
-                  </button>
-                </div>
+                    </div>
+                    <div className="bg-zinc-900 shadow-md rounded-lg p-4 border border-emerald-400">
+                      <h3 className="text-xl font-semibold mb-2 text-emerald-600">
+                        Unsubscribe
+                      </h3>
+                      <button
+                        disabled={isUnsubscribePending}
+                        onClick={handleUnsubscribe}
+                        className={`w-full bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600 transition-colors ${
+                          isUnsubscribePending
+                            ? "opacity-50 cursor-not-allowed"
+                            : ""
+                        }`}
+                      >
+                        {isUnsubscribePending
+                          ? "Unsubscribing..."
+                          : "Unsubscribe"}{" "}
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="shadow-md rounded-lg p-4 bg-zinc-900 border border-emerald-400">
+                    <h3 className="text-xl font-semibold mb-2 text-emerald-600">
+                      Current Plan
+                    </h3>
+                    <p className="text-red-500">
+                      You are not subscribed to any plan
+                    </p>
+                  </div>
+                )}
               </div>
             ) : (
-              <p> Your are not subscribed to any plan.</p>
+              <p> You are not subscribed to any plan.</p>
             )}
           </div>
         </div>
