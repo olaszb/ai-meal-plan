@@ -3,7 +3,7 @@ import { SignUp } from '@clerk/nextjs'
 export default function SignUpPage() {
     return (
         <div className="px-4 py-8 mt-8 sm:py-12 lg:py-16 max-w-7xl mx-auto flex align-center justify-center">
-            <SignUp signInFallbackRedirectUrl="/create-profile"/>
+            <SignUp fallbackRedirectUrl="/create-profile" signInFallbackRedirectUrl="/create-profile"/>
         </div>
     );
 }
