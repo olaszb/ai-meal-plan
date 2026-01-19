@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     `;
 
     const response = await openAI.chat.completions.create({
-      model: "meta-llama/llama-3.3-8b-instruct:free",
+      model: "meta-llama/llama-3.3-70b-instruct:free",
       messages: [
         {
           role: "user",
